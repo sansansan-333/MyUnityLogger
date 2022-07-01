@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Text;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -37,6 +37,57 @@ public class DataLogger : ILogger
         {
             return message.ToString();
         }
+    }
+
+    private static string GetStringArray(Array array)
+    {
+        if (array.Length == 0)
+        {
+            return "[]";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        int[] indices = (int[])Array.CreateInstance(typeof(int), array.Rank);
+
+        sb.Append(new string('[', array.Rank));
+
+        for (int n = 0; n < array.Length; n++)
+        {
+            // carry up indices
+            int carry = 0;
+            for (int d = array.Rank - 1; d >= 0; d--)
+            {
+                if (indices[d] >= array.GetLength(d))
+                {
+                    indices[d] = 0;
+                    indices[d - 1]++;
+                    carry++;
+                }
+            }
+
+            if (carry > 0)
+            {
+                sb.Length--; // remove trailing comma
+                sb.Append(new string(']', carry)).Append(",").Append(new string('[', carry));
+            }
+
+            if (array.GetValue(indices) is Array subarray)
+            {
+                sb.Append(GetStringArray(subarray));
+            }
+            else
+            {
+                sb.Append(array.GetValue(indices).ToString());
+            }
+            sb.Append(",");
+
+            indices[array.Rank-1]++;
+        }
+
+        sb.Length--; // remove trailing comma
+        sb.Append(new string(']', array.Rank));
+
+        return sb.ToString();
     }
 
     public bool IsLogTypeAllowed(LogType logType)
@@ -79,6 +130,11 @@ public class DataLogger : ILogger
     public void Log<T>(IEnumerable<T> message)
     {
         if (IsLogTypeAllowed(LogType.Log)) logHandler.LogFormat(LogType.Log, null, format, new object[] { string.Join(", ", message) });
+    }
+
+    public void LogArray(Array array)
+    {
+        if (IsLogTypeAllowed(LogType.Log)) logHandler.LogFormat(LogType.Log, null, format, new object[] { GetStringArray(array) });
     }
 
     public void Log(string tag, object message)

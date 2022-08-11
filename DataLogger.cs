@@ -184,16 +184,16 @@ public class DataLogger : ILogger
 
     public void LogWarning(object message)
     {
-        if (IsLogTypeAllowed(LogType.Warning)) logHandler.LogFormat(LogType.Log, null, format, new object[] { GetString(message) });
+        if (IsLogTypeAllowed(LogType.Warning)) logHandler.LogFormat(LogType.Warning, null, format, new object[] { GetString(message) });
     }
 
     public void LogWarning(string tag, object message)
     {
-        if (IsLogTypeAllowed(LogType.Warning)) logHandler.LogFormat(LogType.Log, null, tagFormat, new object[] { tag, GetString(message) });
+        if (IsLogTypeAllowed(LogType.Warning)) logHandler.LogFormat(LogType.Warning, null, tagFormat, new object[] { tag, GetString(message) });
     }
 
     public void LogWarning(string tag, object message, UnityEngine.Object context)
     {
-        if (IsLogTypeAllowed(LogType.Warning)) logHandler.LogFormat(LogType.Log, context, tagFormat, new object[] { tag, GetString(message) });
+        if (IsLogTypeAllowed(LogType.Warning)) logHandler.LogFormat(LogType.Warning, context, tagFormat, new object[] { tag, GetString(message) });
     }
 }

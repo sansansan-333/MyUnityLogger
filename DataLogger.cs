@@ -94,7 +94,7 @@ public class DataLogger : ILogger
     {
         if (!logEnabled) return false;
 
-        return (filterLogType <= logType);
+        return (logType <= filterLogType);
     }
 
     public void Log(LogType logType, object message)
